@@ -29,7 +29,7 @@ import org.apache.dubbo.common.URL;
  * @see ExpiringCache
  * @see Cache
  */
-
+//Expiring策略
 public class ExpiringCacheFactory extends AbstractCacheFactory {
 
     /**

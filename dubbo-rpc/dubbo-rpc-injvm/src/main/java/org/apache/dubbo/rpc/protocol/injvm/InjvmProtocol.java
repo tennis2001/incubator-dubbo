@@ -32,6 +32,7 @@ import java.util.Map;
 /**
  * InjvmProtocol
  */
+//谁来使用InjvmProtocol？？？
 public class InjvmProtocol extends AbstractProtocol implements Protocol {
 
     public static final String NAME = Constants.LOCAL_PROTOCOL;
@@ -45,6 +46,7 @@ public class InjvmProtocol extends AbstractProtocol implements Protocol {
 
     public static InjvmProtocol getInjvmProtocol() {
         if (INSTANCE == null) {
+            //扩展加载器加载扩展
             ExtensionLoader.getExtensionLoader(Protocol.class).getExtension(InjvmProtocol.NAME); // load
         }
         return INSTANCE;
@@ -52,11 +54,12 @@ public class InjvmProtocol extends AbstractProtocol implements Protocol {
 
     static Exporter<?> getExporter(Map<String, Exporter<?>> map, URL key) {
         Exporter<?> result = null;
-
+        //URL中ServiceKey不包含*
         if (!key.getServiceKey().contains("*")) {
             result = map.get(key.getServiceKey());
         } else {
             if (map != null && !map.isEmpty()) {
+                //遍历Map<String, Exporter<?>> map
                 for (Exporter<?> exporter : map.values()) {
                     if (UrlUtils.isServiceKeyMatch(key, exporter.getInvoker().getUrl())) {
                         result = exporter;
@@ -68,7 +71,9 @@ public class InjvmProtocol extends AbstractProtocol implements Protocol {
 
         if (result == null) {
             return null;
-        } else if (ProtocolUtils.isGeneric(
+        }
+        //是否泛化
+        else if (ProtocolUtils.isGeneric(
                 result.getInvoker().getUrl().getParameter(Constants.GENERIC_KEY))) {
             return null;
         } else {
@@ -83,6 +88,7 @@ public class InjvmProtocol extends AbstractProtocol implements Protocol {
 
     @Override
     public <T> Exporter<T> export(Invoker<T> invoker) throws RpcException {
+        // 创建 InjvmExporter(导出服务到本地)
         return new InjvmExporter<T>(invoker, invoker.getUrl().getServiceKey(), exporterMap);
     }
 

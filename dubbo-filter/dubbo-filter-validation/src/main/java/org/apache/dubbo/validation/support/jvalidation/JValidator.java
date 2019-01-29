@@ -73,6 +73,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *     e.g. &lt;dubbo:method name="save" validation="jvalidation" /&gt;
  * </pre>
  */
+//JValidator校验方法
 public class JValidator implements Validator {
 
     private static final Logger logger = LoggerFactory.getLogger(JValidator.class);
@@ -84,15 +85,21 @@ public class JValidator implements Validator {
     private final javax.validation.Validator validator;
 
     @SuppressWarnings({"unchecked", "rawtypes"})
+    //构造方法
     public JValidator(URL url) {
+        //反射 获取ServiceInterface 类型信息
         this.clazz = ReflectUtils.forName(url.getServiceInterface());
         String jvalidation = url.getParameter("jvalidation");
+        //javax.validation.ValidatorFactory
         ValidatorFactory factory;
         if (jvalidation != null && jvalidation.length() > 0) {
+            //Provider创建ValidatorFactory
             factory = Validation.byProvider((Class) ReflectUtils.forName(jvalidation)).configure().buildValidatorFactory();
         } else {
+            //创建默认ValidatorFactory
             factory = Validation.buildDefaultValidatorFactory();
         }
+        //创建validator
         this.validator = factory.getValidator();
         this.methodClassMap = new ConcurrentHashMap<String, Class>();
     }
@@ -241,6 +248,7 @@ public class JValidator implements Validator {
         return memberValue;
     }
 
+    //校验方法
     @Override
     public void validate(String methodName, Class<?>[] parameterTypes, Object[] arguments) throws Exception {
         List<Class<?>> groups = new ArrayList<Class<?>>();

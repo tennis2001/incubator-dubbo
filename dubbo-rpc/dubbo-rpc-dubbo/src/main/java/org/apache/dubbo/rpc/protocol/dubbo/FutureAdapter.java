@@ -29,6 +29,7 @@ import java.util.concurrent.TimeoutException;
 /**
  * FutureAdapter
  */
+//adapter适配器？？？
 public class FutureAdapter<V> extends CompletableFuture<V> {
 
     private final ResponseFuture future;
@@ -37,6 +38,8 @@ public class FutureAdapter<V> extends CompletableFuture<V> {
     public FutureAdapter(ResponseFuture future) {
         this.future = future;
         this.resultFuture = new CompletableFuture<>();
+        //设置回调？？？传入了匿名内部类，继承了ResponseCallback
+        //匿名内部类与回调有啥关系？？？
         future.setCallback(new ResponseCallback() {
             @Override
             public void done(Object response) {

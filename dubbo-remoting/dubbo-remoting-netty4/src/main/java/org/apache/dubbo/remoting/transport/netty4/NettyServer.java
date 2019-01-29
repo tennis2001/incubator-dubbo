@@ -69,6 +69,7 @@ public class NettyServer extends AbstractServer implements Server {
     protected void doOpen() throws Throwable {
         bootstrap = new ServerBootstrap();
 
+        //创建线程工厂
         bossGroup = new NioEventLoopGroup(1, new DefaultThreadFactory("NettyServerBoss", true));
         workerGroup = new NioEventLoopGroup(getUrl().getPositiveParameter(Constants.IO_THREADS_KEY, Constants.DEFAULT_IO_THREADS),
                 new DefaultThreadFactory("NettyServerWorker", true));

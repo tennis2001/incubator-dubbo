@@ -28,6 +28,8 @@ import org.apache.dubbo.rpc.Invocation;
  * @see Cache
  */
 @SPI("lru")
+//cache 数据结构 和 创建方法 分别走两条路，Cache接口统一管理 cache 数据结构，CacheFactory接口统一管理 cache创建方法
+//为什么要用Factory管理cache的创建，而不是直接创建cache？可以直接创建cache吗
 public interface CacheFactory {
 
     /**

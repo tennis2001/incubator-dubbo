@@ -77,11 +77,14 @@ public class ValidationFilter implements Filter {
      */
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
+        //validation不为空
         if (validation != null && !invocation.getMethodName().startsWith("$")
                 && ConfigUtils.isNotEmpty(invoker.getUrl().getMethodParameter(invocation.getMethodName(), Constants.VALIDATION_KEY))) {
             try {
                 Validator validator = validation.getValidator(invoker.getUrl());
+                //validator不为空
                 if (validator != null) {
+                    //校验
                     validator.validate(invocation.getMethodName(), invocation.getParameterTypes(), invocation.getArguments());
                 }
             } catch (RpcException e) {
@@ -90,6 +93,7 @@ public class ValidationFilter implements Filter {
                 return new RpcResult(t);
             }
         }
+        //直接调用invoker
         return invoker.invoke(invocation);
     }
 

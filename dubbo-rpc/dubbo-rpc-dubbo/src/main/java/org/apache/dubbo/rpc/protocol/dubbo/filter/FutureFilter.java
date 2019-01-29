@@ -34,11 +34,13 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
- * EventFilter
+ * EventFilter 事件过滤
  */
+//分组为消费者？？
 @Activate(group = Constants.CONSUMER)
 public class FutureFilter implements Filter {
 
+    //为什么logger有的是static，有的不是？？
     protected static final Logger logger = LoggerFactory.getLogger(FutureFilter.class);
 
     @Override
@@ -53,6 +55,7 @@ public class FutureFilter implements Filter {
     public Result onResponse(Result result, Invoker<?> invoker, Invocation invocation) {
         if (result instanceof AsyncRpcResult) {
             AsyncRpcResult asyncResult = (AsyncRpcResult) result;
+            //异步的thenApplyWithContext？？？
             asyncResult.thenApplyWithContext(r -> {
                 asyncCallback(invoker, invocation, r);
                 return r;

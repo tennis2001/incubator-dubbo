@@ -25,6 +25,9 @@ package org.apache.dubbo.cache;
  * @see org.apache.dubbo.cache.support.expiring.ExpiringCache
  * @see org.apache.dubbo.cache.support.threadlocal.ThreadLocalCache
  */
+//Cache有多种形式，接口cache统一上层形式（不同的cache策略有不同的配置信息）
+//cache 数据结构 和 创建方法 分别走两条路，Cache接口统一管理 cache 数据结构，CacheFactory接口统一管理 cache创建方法
+//为什么要用Factory管理cache的创建，而不是直接创建cache？可以直接创建cache吗
 public interface Cache {
     /**
      * API to store value against a key

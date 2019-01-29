@@ -19,6 +19,7 @@ package org.apache.dubbo.common.utils;
 /**
  * Helper Class for hold a value.
  */
+//为甚创建 Holder 包装 value
 public class Holder<T> {
 
     private volatile T value;

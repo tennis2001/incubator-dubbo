@@ -45,6 +45,7 @@ public class LruCache implements Cache {
     /**
      * This is used to store cache records
      */
+    //LRU策略中，用Map<Object, Object> store 储存cache
     private final Map<Object, Object> store;
 
     /**
@@ -54,6 +55,7 @@ public class LruCache implements Cache {
      */
     public LruCache(URL url) {
         final int max = url.getParameter("cache.size", 1000);
+        //LRUCache<Object, Object>(max)？
         this.store = new LRUCache<Object, Object>(max);
     }
 

@@ -35,6 +35,7 @@ public interface Endpoint {
      *
      * @return url
      */
+    //url是谁的URL？
     URL getUrl();
 
     /**
@@ -49,6 +50,7 @@ public interface Endpoint {
      *
      * @return local address.
      */
+    //getLocalAddress代表是 provider！！！
     InetSocketAddress getLocalAddress();
 
     /**

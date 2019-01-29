@@ -54,6 +54,7 @@ import java.lang.annotation.Target;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
+//注解类
 public @interface SPI {
 
     /**

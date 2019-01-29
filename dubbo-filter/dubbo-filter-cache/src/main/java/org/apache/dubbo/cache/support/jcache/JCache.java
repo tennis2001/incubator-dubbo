@@ -41,8 +41,10 @@ import java.util.concurrent.TimeUnit;
  */
 public class JCache implements org.apache.dubbo.cache.Cache {
 
+    //JCache策略，用Cache<Object, Object> store储存cache
     private final Cache<Object, Object> store;
 
+    //JCache构造方法复杂，稍后再读
     public JCache(URL url) {
         String method = url.getParameter(Constants.METHOD_KEY, "");
         String key = url.getAddress() + "." + url.getServiceKey() + "." + method;

@@ -25,13 +25,17 @@ import java.net.InetSocketAddress;
  * @see org.apache.dubbo.remoting.Server#getChannels()
  * @see org.apache.dubbo.remoting.Server#getChannel(InetSocketAddress)
  */
+//Channel到底统一管理了啥？
 public interface Channel extends Endpoint {
+
 
     /**
      * get remote address.
      *
      * @return remote address.
      */
+    //getRemoteAddress代表是 consumer！！！
+
     InetSocketAddress getRemoteAddress();
 
     /**

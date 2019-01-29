@@ -33,7 +33,7 @@ import org.springframework.context.annotation.ImportResource;
 @DubboComponentScan
 public class ConsumerConfiguration {
 
-    @Reference(version = "2.5.8", url = "dubbo://127.0.0.1:12345")
+    @Reference(version = "2.5.8", url = "dubbo://127.0.0.1:2534")
     private DemoService demoService;
 
     public DemoService getDemoService() {

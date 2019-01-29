@@ -38,6 +38,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * dubbo protocol support class.
  */
 @SuppressWarnings("deprecation")
+//懒连接客户端
 final class LazyConnectExchangeClient implements ExchangeClient {
 
     // when this warning rises from invocation, program probably have bug.

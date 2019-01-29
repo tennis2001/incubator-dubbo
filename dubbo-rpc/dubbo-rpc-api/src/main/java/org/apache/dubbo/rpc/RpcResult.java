@@ -23,6 +23,7 @@ import java.lang.reflect.Field;
  *
  * @serial Don't change the class name and properties.
  */
+//RpcResult 继承 AbstractResult, RpcResult 无 fields，使用父类的 result 和 exception 的字段。
 public class RpcResult extends AbstractResult {
 
     private static final long serialVersionUID = -6925924956850004727L;

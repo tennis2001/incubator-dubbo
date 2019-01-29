@@ -33,6 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * dubbo protocol support class.
  */
 @SuppressWarnings("deprecation")
+//引用计数客户端
 final class ReferenceCountExchangeClient implements ExchangeClient {
 
     private final URL url;

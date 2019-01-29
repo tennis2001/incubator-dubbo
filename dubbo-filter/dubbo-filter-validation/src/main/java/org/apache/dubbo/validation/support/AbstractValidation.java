@@ -33,12 +33,15 @@ import java.util.concurrent.ConcurrentMap;
  */
 public abstract class AbstractValidation implements Validation {
 
+    //ConcurrentMap<String, Validator> validators 储存所有Validator
     private final ConcurrentMap<String, Validator> validators = new ConcurrentHashMap<String, Validator>();
 
     @Override
     public Validator getValidator(URL url) {
         String key = url.toFullString();
+        //从validators中查找Validator
         Validator validator = validators.get(key);
+        //如果找不到，创建Validator，并将其放入validators
         if (validator == null) {
             validators.put(key, createValidator(url));
             validator = validators.get(key);

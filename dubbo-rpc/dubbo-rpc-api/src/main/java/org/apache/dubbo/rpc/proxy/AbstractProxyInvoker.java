@@ -34,6 +34,7 @@ import java.util.concurrent.CompletableFuture;
 /**
  * InvokerWrapper
  */
+//为什么要创建这个类，与匿名内部类的关系
 public abstract class AbstractProxyInvoker<T> implements Invoker<T> {
     Logger logger = LoggerFactory.getLogger(AbstractProxyInvoker.class);
 

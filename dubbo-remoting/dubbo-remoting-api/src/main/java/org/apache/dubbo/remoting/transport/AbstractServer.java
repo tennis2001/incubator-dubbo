@@ -48,18 +48,24 @@ public abstract class AbstractServer extends AbstractEndpoint implements Server 
     private int idleTimeout;
 
     public AbstractServer(URL url, ChannelHandler handler) throws RemotingException {
+        // 调用父类构造方法，这里就不用跟进去了，没什么复杂逻辑
         super(url, handler);
         localAddress = getUrl().toInetSocketAddress();
 
+        // 获取 ip 和端口
         String bindIp = getUrl().getParameter(Constants.BIND_IP_KEY, getUrl().getHost());
         int bindPort = getUrl().getParameter(Constants.BIND_PORT_KEY, getUrl().getPort());
         if (url.getParameter(Constants.ANYHOST_KEY, false) || NetUtils.isInvalidLocalHost(bindIp)) {
+            // 设置 ip 为 0.0.0.0
             bindIp = Constants.ANYHOST_VALUE;
         }
         bindAddress = new InetSocketAddress(bindIp, bindPort);
+        // 获取最大可接受连接数
         this.accepts = url.getParameter(Constants.ACCEPTS_KEY, Constants.DEFAULT_ACCEPTS);
         this.idleTimeout = url.getParameter(Constants.IDLE_TIMEOUT_KEY, Constants.DEFAULT_IDLE_TIMEOUT);
         try {
+            // 调用模板方法 doOpen 启动服务器
+            // 创建NettyServerBoss-4-1线程
             doOpen();
             if (logger.isInfoEnabled()) {
                 logger.info("Start " + getClass().getSimpleName() + " bind " + getBindAddress() + ", export " + getLocalAddress());
@@ -77,12 +83,14 @@ public abstract class AbstractServer extends AbstractEndpoint implements Server 
 
     protected abstract void doClose() throws Throwable;
 
+    //重置
     @Override
     public void reset(URL url) {
         if (url == null) {
             return;
         }
         try {
+            //判断 ACCEPTS_KEY
             if (url.hasParameter(Constants.ACCEPTS_KEY)) {
                 int a = url.getParameter(Constants.ACCEPTS_KEY, 0);
                 if (a > 0) {
@@ -93,6 +101,7 @@ public abstract class AbstractServer extends AbstractEndpoint implements Server 
             logger.error(t.getMessage(), t);
         }
         try {
+            //判断 IDLE_TIMEOUT_KEY
             if (url.hasParameter(Constants.IDLE_TIMEOUT_KEY)) {
                 int t = url.getParameter(Constants.IDLE_TIMEOUT_KEY, 0);
                 if (t > 0) {
@@ -103,6 +112,7 @@ public abstract class AbstractServer extends AbstractEndpoint implements Server 
             logger.error(t.getMessage(), t);
         }
         try {
+            //判断 THREADS_KEY
             if (url.hasParameter(Constants.THREADS_KEY)
                     && executor instanceof ThreadPoolExecutor && !executor.isShutdown()) {
                 ThreadPoolExecutor threadPoolExecutor = (ThreadPoolExecutor) executor;

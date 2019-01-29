@@ -16,11 +16,7 @@
  */
 package org.apache.dubbo.cache.support.expiring;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -42,8 +38,9 @@ public class ExpiringMap<K, V> implements Map<K, V> {
 
     private static volatile int expireCount = 1;
 
+    //实例成员变量
     private final ConcurrentHashMap<K, ExpiryObject> delegateMap;
-
+    //实例成员变量
     private final ExpireThread expireThread;
 
     public ExpiringMap() {
@@ -246,9 +243,12 @@ public class ExpiringMap<K, V> implements Map<K, V> {
     /**
      * Background thread, periodically checking if the data is out of date
      */
+    //实现Runnable，设置（线程的）任务
     public class ExpireThread implements Runnable {
+        //实例成员变量
         private long timeToLiveMillis;
         private long expirationIntervalMillis;
+        //running 判断标准 volatile
         private volatile boolean running = false;
         private final Thread expirerThread;
 
@@ -262,8 +262,13 @@ public class ExpiringMap<K, V> implements Map<K, V> {
                     '}';
         }
 
+        //构造方法
+        // 每创建一个ExpireThread对象，就创建了一个新线程expirerThread
+
         public ExpireThread() {
+            //新建线程，this 将 该Runnable对象（任务） 绑定在expirerThread线程上
             expirerThread = new Thread(this, "ExpiryMapExpire-" + expireCount++);
+            //设置为后台线程
             expirerThread.setDaemon(true);
         }
 

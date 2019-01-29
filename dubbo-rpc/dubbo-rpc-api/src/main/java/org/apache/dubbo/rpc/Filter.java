@@ -61,6 +61,7 @@ public interface Filter {
      */
     Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException;
 
+    //接口里能有完整的方法？
     default Result onResponse(Result result, Invoker<?> invoker, Invocation invocation) {
         return result;
     }

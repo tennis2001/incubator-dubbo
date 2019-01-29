@@ -25,6 +25,7 @@ import java.util.Map;
 /**
  * DubboExporter
  */
+//DubboExporter导出者？？？
 public class DubboExporter<T> extends AbstractExporter<T> {
 
     private final String key;

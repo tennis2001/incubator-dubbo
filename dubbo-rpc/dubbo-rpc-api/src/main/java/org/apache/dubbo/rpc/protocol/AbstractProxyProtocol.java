@@ -33,6 +33,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * AbstractProxyProtocol
  */
+//抽象代理协议 5种实现
 public abstract class AbstractProxyProtocol extends AbstractProtocol {
 
     private final List<Class<?>> rpcExceptions = new CopyOnWriteArrayList<Class<?>>();

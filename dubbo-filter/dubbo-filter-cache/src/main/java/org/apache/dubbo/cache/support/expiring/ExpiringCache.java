@@ -41,15 +41,18 @@ import java.util.Map;
  * @see org.apache.dubbo.cache.filter.CacheFilter
  */
 public class ExpiringCache implements Cache {
+    //Expiring策略，用Map<Object, Object> store存储cache,与LRU策略的区别？
     private final Map<Object, Object> store;
 
     public ExpiringCache(URL url) {
-        // cache time (second)
+        // cache time (second) 缓存时间？
         final int secondsToLive = url.getParameter("cache.seconds", 180);
-        // Cache check interval (second)
+        // Cache check interval (second) 缓存间隔？
         final int intervalSeconds = url.getParameter("cache.interval", 4);
         ExpiringMap<Object, Object> expiringMap = new ExpiringMap<Object, Object>(secondsToLive, intervalSeconds);
+        //启动expireThread
         expiringMap.getExpireThread().startExpiryIfNotStarted();
+        //ExpiringMap<Object, Object> 扩展了 Map<>接口，所以可以向上转型
         this.store = expiringMap;
     }
 

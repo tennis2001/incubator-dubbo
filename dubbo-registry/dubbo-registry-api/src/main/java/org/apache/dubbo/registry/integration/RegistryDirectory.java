@@ -68,6 +68,10 @@ import static org.apache.dubbo.common.utils.UrlUtils.classifyUrls;
 
 /**
  * RegistryDirectory
+ * RegistryDirectory 是一种动态服务目录，实现了 NotifyListener 接口。
+ * 当注册中心服务配置发生变化后，RegistryDirectory 可收到与当前服务相关的变化。
+ * 收到变更通知后，RegistryDirectory 可根据配置变更信息刷新 Invoker 列表。
+ * RegistryDirectory 中有几个比较重要的逻辑，第一是 Invoker 的列举逻辑，第二是接收服务配置变更的逻辑，第三是 Invoker 列表的刷新逻辑。
  */
 public class RegistryDirectory<T> extends AbstractDirectory<T> implements NotifyListener {
 
@@ -214,47 +218,74 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
      */
     // TODO: 2017/8/31 FIXME The thread pool should be used to refresh the address, otherwise the task may be accumulated.
     private void refreshInvoker(List<URL> invokerUrls) {
+        //非空判断
         Assert.notNull(invokerUrls, "invokerUrls should not be null");
 
+        //invokerUrls仅有一个,非空，且protocol为empty
         if (invokerUrls.size() == 1 && invokerUrls.get(0) != null && Constants.EMPTY_PROTOCOL.equals(invokerUrls
                 .get(0)
                 .getProtocol())) {
+            //禁止访问
             this.forbidden = true; // Forbid to access
             this.invokers = Collections.emptyList();
+            //路由链设置invoker
             routerChain.setInvokers(this.invokers);
+            //销毁所有invoker
             destroyAllInvokers(); // Close all invokers
-        } else {
+        }
+        //invokerUrls非空
+        else {
+            //允许访问
             this.forbidden = false; // Allow to access
+            //旧的 UrlInvokerMap
             Map<String, Invoker<T>> oldUrlInvokerMap = this.urlInvokerMap; // local reference
+            /*
+            invokerUrls 与 cachedInvokerUrls
+             */
+            //若invokerUrls为emptyList
+            // emptyList  new之后是否为null？ empty与null的区别？
             if (invokerUrls == Collections.<URL>emptyList()) {
                 invokerUrls = new ArrayList<>();
             }
+            //若invokerUrls isEmpty，且缓存InvokerUrls非空
             if (invokerUrls.isEmpty() && this.cachedInvokerUrls != null) {
+                //添加缓存InvokerUrls
                 invokerUrls.addAll(this.cachedInvokerUrls);
-            } else {
+            }
+            //否则，缓存invokerUrls
+            else {
                 this.cachedInvokerUrls = new HashSet<>();
                 this.cachedInvokerUrls.addAll(invokerUrls);//Cached invoker urls, convenient for comparison
             }
+
+            //invokerUrls依然为Empty，直接返回
             if (invokerUrls.isEmpty()) {
                 return;
             }
+
+            //新的UrlInvokerMap
             Map<String, Invoker<T>> newUrlInvokerMap = toInvokers(invokerUrls);// Translate url list to Invoker map
 
             // state change
             // If the calculation is wrong, it is not processed.
+            //如果新的UrlInvokerMap为空，报错
             if (newUrlInvokerMap == null || newUrlInvokerMap.size() == 0) {
                 logger.error(new IllegalStateException("urls to invokers error .invokerUrls.size :" + invokerUrls.size() + ", invoker.size :0. urls :" + invokerUrls
                         .toString()));
                 return;
             }
 
+            //新的Invokers
             List<Invoker<T>> newInvokers = Collections.unmodifiableList(new ArrayList<>(newUrlInvokerMap.values()));
             // pre-route and build cache, notice that route cache should build on original Invoker list.
             // toMergeMethodInvokerMap() will wrap some invokers having different groups, those wrapped invokers not should be routed.
+            //路由链设置invoker
             routerChain.setInvokers(newInvokers);
+            //是否multiGroup？
             this.invokers = multiGroup ? toMergeInvokerList(newInvokers) : newInvokers;
             this.urlInvokerMap = newUrlInvokerMap;
 
+            //销毁未使用的Invokers
             try {
                 destroyUnusedInvokers(oldUrlInvokerMap, newUrlInvokerMap); // Close the unused Invoker
             } catch (Exception e) {
@@ -263,21 +294,31 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
         }
     }
 
+    //MergeInvokerList   multiGroup相关
     private List<Invoker<T>> toMergeInvokerList(List<Invoker<T>> invokers) {
         List<Invoker<T>> mergedInvokers = new ArrayList<>();
+
+        //分组
         Map<String, List<Invoker<T>>> groupMap = new HashMap<String, List<Invoker<T>>>();
         for (Invoker<T> invoker : invokers) {
+            //invoker 的 GROUP_KEY
             String group = invoker.getUrl().getParameter(Constants.GROUP_KEY, "");
+            //k=ArrayList
             groupMap.computeIfAbsent(group, k -> new ArrayList<>());
+            //按组添加invoker
             groupMap.get(group).add(invoker);
         }
 
+        //只有一组，直接merge
         if (groupMap.size() == 1) {
             mergedInvokers.addAll(groupMap.values().iterator().next());
-        } else if (groupMap.size() > 1) {
+        }
+        //不止一组
+        else if (groupMap.size() > 1) {
             for (List<Invoker<T>> groupList : groupMap.values()) {
                 StaticDirectory<T> staticDirectory = new StaticDirectory<>(groupList);
                 staticDirectory.buildRouterChain();
+                //cluster join
                 mergedInvokers.add(cluster.join(staticDirectory));
             }
         } else {
@@ -333,6 +374,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
         String queryProtocols = this.queryMap.get(Constants.PROTOCOL_KEY);
         for (URL providerUrl : urls) {
             // If protocol is configured at the reference side, only the matching protocol is selected
+            //queryProtocols非空
             if (queryProtocols != null && queryProtocols.length() > 0) {
                 boolean accept = false;
                 String[] acceptProtocols = queryProtocols.split(",");
@@ -516,6 +558,7 @@ public class RegistryDirectory<T> extends AbstractDirectory<T> implements Notify
     @Override
     public List<Invoker<T>> doList(Invocation invocation) {
         if (forbidden) {
+            // 服务提供者关闭或禁用了服务，此时抛出 No provider 异常
             // 1. No service provider 2. Service providers are disabled
             throw new RpcException(RpcException.FORBIDDEN_EXCEPTION, "No provider available from registry " +
                     getUrl().getAddress() + " for service " + getConsumerUrl().getServiceKey() + " on consumer " +

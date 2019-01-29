@@ -82,6 +82,7 @@ public class Server {
         if (!started.compareAndSet(false, true)) {
             return;
         }
+        //创建线程工厂
         boss = new NioEventLoopGroup(0, new DefaultThreadFactory("qos-boss", true));
         worker = new NioEventLoopGroup(0, new DefaultThreadFactory("qos-worker", true));
         ServerBootstrap serverBootstrap = new ServerBootstrap();
@@ -89,6 +90,7 @@ public class Server {
         serverBootstrap.channel(NioServerSocketChannel.class);
         serverBootstrap.childOption(ChannelOption.TCP_NODELAY, true);
         serverBootstrap.childOption(ChannelOption.SO_REUSEADDR, true);
+        //匿名内部类
         serverBootstrap.childHandler(new ChannelInitializer<Channel>() {
 
             @Override
@@ -97,6 +99,7 @@ public class Server {
             }
         });
         try {
+            //创建线程qos-boss-1-1   ObjectClearerThread
             serverBootstrap.bind(port).sync();
             logger.info("qos-server bind localhost:" + port);
         } catch (Throwable throwable) {

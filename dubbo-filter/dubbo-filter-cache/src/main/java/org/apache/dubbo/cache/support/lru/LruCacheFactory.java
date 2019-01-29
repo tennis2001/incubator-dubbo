@@ -28,6 +28,7 @@ import org.apache.dubbo.common.URL;
  * @see LruCache
  * @see Cache
  */
+//least recently used 策略
 public class LruCacheFactory extends AbstractCacheFactory {
 
     /**

@@ -33,6 +33,7 @@ import java.util.List;
 /**
  * ListenerProtocol
  */
+//协议过滤
 public class ProtocolFilterWrapper implements Protocol {
 
     private final Protocol protocol;

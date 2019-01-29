@@ -29,11 +29,14 @@ public class NettyTransporter implements Transporter {
 
     @Override
     public Server bind(URL url, ChannelHandler listener) throws RemotingException {
+        // 创建 NettyServer
         return new NettyServer(url, listener);
     }
 
     @Override
     public Client connect(URL url, ChannelHandler listener) throws RemotingException {
+        // 创建 NettyClient 对象
+        //在往下就是通过 Netty 提供的 API 构建 Netty 客户端了
         return new NettyClient(url, listener);
     }
 

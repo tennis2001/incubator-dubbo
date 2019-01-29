@@ -49,6 +49,7 @@ public class RandomLoadBalance extends AbstractLoadBalance {
             weights[i] = weight;
             // Sum
             totalWeight += weight;
+            //啥意思？？？boolean && int != int
             if (sameWeight && weight != firstWeight) {
                 sameWeight = false;
             }

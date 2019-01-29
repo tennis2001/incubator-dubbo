@@ -99,7 +99,9 @@ public class ExecutorUtil {
     }
 
     private static void newThreadToCloseExecutor(final ExecutorService es) {
+        //如果ExecutorService es没有终止
         if (!isTerminated(es)) {
+            //实现Runnable()接口的内部类
             shutdownExecutor.execute(new Runnable() {
                 @Override
                 public void run() {

@@ -24,9 +24,9 @@
     <dubbo:application name="dubbo-annotation-provider"/>
 
     <!-- registry center config -->
-    <dubbo:registry id="my-registry" address="N/A"/>
+    <dubbo:registry id="my-registry" address="multicast://127.0.0.1:1234"/>
 
     <!-- protocol config -->
-    <dubbo:protocol name="dubbo" port="12345"/>
+    <dubbo:protocol name="dubbo" port="2534"/>
 
 </beans>

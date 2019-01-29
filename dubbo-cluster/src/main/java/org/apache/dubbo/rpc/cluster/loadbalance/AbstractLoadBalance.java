@@ -37,6 +37,9 @@ public abstract class AbstractLoadBalance implements LoadBalance {
      * @param weight the weight of an invoker
      * @return weight which takes warmup into account
      */
+    //当服务运行时长小于服务预热时间时，对服务进行降权，避免让服务在启动之初就处于高负载状态。
+    // 服务预热是一个优化手段，与此类似的还有 JVM 预热。
+    // 主要目的是让服务启动后“低功率”运行一段时间，使其效率慢慢提升至最佳状态。
     static int calculateWarmupWeight(int uptime, int warmup, int weight) {
         int ww = (int) ((float) uptime / ((float) warmup / (float) weight));
         return ww < 1 ? 1 : (ww > weight ? weight : ww);
@@ -69,7 +72,9 @@ public abstract class AbstractLoadBalance implements LoadBalance {
         if (weight > 0) {
             long timestamp = invoker.getUrl().getParameter(Constants.REMOTE_TIMESTAMP_KEY, 0L);
             if (timestamp > 0L) {
+                //服务运行时长
                 int uptime = (int) (System.currentTimeMillis() - timestamp);
+                //服务预热时间
                 int warmup = invoker.getUrl().getParameter(Constants.WARMUP_KEY, Constants.DEFAULT_WARMUP);
                 if (uptime > 0 && uptime < warmup) {
                     weight = calculateWarmupWeight(uptime, warmup, weight);

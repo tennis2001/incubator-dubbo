@@ -79,7 +79,7 @@ public class CacheFilter implements Filter {
 
     /**
      * If cache is configured, dubbo will invoke method on each method call. If cache value is returned by cache store
-     * then it will return otherwise call the remote method and return value. If remote method's return valeu has error
+     * then it will return otherwise call the remote method and return value. If remote method's return value has error
      * then it will not cache the value.
      * @param invoker    service
      * @param invocation invocation.
@@ -89,29 +89,36 @@ public class CacheFilter implements Filter {
     @Override
     public Result invoke(Invoker<?> invoker, Invocation invocation) throws RpcException {
         if (cacheFactory != null && ConfigUtils.isNotEmpty(invoker.getUrl().getMethodParameter(invocation.getMethodName(), Constants.CACHE_KEY))) {
+            //从cacheFactory获取或创建cache
             Cache cache = cacheFactory.getCache(invoker.getUrl(), invocation);
+            //cache存在，cache里可能没有内容（值），需加以判断
             if (cache != null) {
                 String key = StringUtils.toArgumentString(invocation.getArguments());
                 Object value = cache.get(key);
+                //如果value不为空，有该key的缓存，直接返回缓存value的RpcResult
                 if (value != null) {
+                    //如果value是valueWrapper的实例（为什么要用valueWrapper包装value？）
                     if (value instanceof ValueWrapper) {
                         return new RpcResult(((ValueWrapper)value).get());
                     } else {
                         return new RpcResult(value);
                     }
                 }
+                //如果value为空，无缓存，invoker直接执行
                 Result result = invoker.invoke(invocation);
+                //如果执行结果无异常，则缓存结果value
                 if (!result.hasException()) {
                     cache.put(key, new ValueWrapper(result.getValue()));
                 }
                 return result;
             }
         }
+        //无法获取缓存，invoker直接执行
         return invoker.invoke(invocation);
     }
 
     /**
-     * Cache value wrapper.
+     * Cache value wrapper.为啥要创建包装类？
      */
     static class ValueWrapper implements Serializable{
 

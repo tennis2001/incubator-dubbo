@@ -43,6 +43,7 @@ public class ThreadLocalCache implements Cache {
     /**
      * Thread local variable to store cached data.
      */
+    //ThreadLocal策略中，用ThreadLocal<Map<Object, Object>> store储存cache
     private final ThreadLocal<Map<Object, Object>> store;
 
     /**
@@ -50,6 +51,7 @@ public class ThreadLocalCache implements Cache {
      * argument is not getting used in the scope of this class.
      * @param url
      */
+    //使用内部类，参数url没有使用？直接初始化了一个ThreadLocal
     public ThreadLocalCache(URL url) {
         this.store = new ThreadLocal<Map<Object, Object>>() {
             @Override

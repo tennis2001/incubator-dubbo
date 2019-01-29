@@ -34,13 +34,16 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * abstract ProtocolSupport.
  */
+//各种协议的统一概括
 public abstract class AbstractProtocol implements Protocol {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
+    //ConcurrentHashMap<String, Exporter<?>>保存所有Exporter Exporter干啥的？
     protected final Map<String, Exporter<?>> exporterMap = new ConcurrentHashMap<String, Exporter<?>>();
 
     //TODO SOFEREFENCE
+    //ConcurrentHashSet<Invoker<?>> 保存所有invokers 调用者
     protected final Set<Invoker<?>> invokers = new ConcurrentHashSet<Invoker<?>>();
 
     protected static String serviceKey(URL url) {

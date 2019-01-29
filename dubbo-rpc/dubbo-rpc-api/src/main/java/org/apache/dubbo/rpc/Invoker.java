@@ -25,6 +25,7 @@ import org.apache.dubbo.common.Node;
  * @see org.apache.dubbo.rpc.InvokerListener
  * @see org.apache.dubbo.rpc.protocol.AbstractInvoker
  */
+//Invoker执行调用的主体
 public interface Invoker<T> extends Node {
 
     /**

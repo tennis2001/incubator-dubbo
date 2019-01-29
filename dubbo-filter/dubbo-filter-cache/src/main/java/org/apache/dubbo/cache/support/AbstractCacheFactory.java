@@ -36,11 +36,14 @@ import java.util.concurrent.ConcurrentMap;
  * @see org.apache.dubbo.cache.support.threadlocal.ThreadLocalCacheFactory
  * @see org.apache.dubbo.cache.support.expiring.ExpiringCacheFactory
  */
+//cache 数据结构 和 创建方法 分别走两条路，Cache接口统一管理 cache 数据结构，CacheFactory接口统一管理 cache创建方法
+//为什么要用Factory管理cache的创建，而不是直接创建cache？可以直接创建cache吗
 public abstract class AbstractCacheFactory implements CacheFactory {
 
     /**
      * This is used to store factory level-1 cached data.
      */
+    //ConcurrentMap<String, Cache> caches 记录、管理所有cache
     private final ConcurrentMap<String, Cache> caches = new ConcurrentHashMap<String, Cache>();
 
     /**
@@ -51,13 +54,17 @@ public abstract class AbstractCacheFactory implements CacheFactory {
      */
     @Override
     public Cache getCache(URL url, Invocation invocation) {
+        //url添加关于 method方法的 参数
         url = url.addParameter(Constants.METHOD_KEY, invocation.getMethodName());
         String key = url.toFullString();
+        //从ConcurrentMap<String, Cache> caches中查找 key对应cache
         Cache cache = caches.get(key);
+        //如果cache为空，查不到，创建该key（url）对应的cache，并添加进caches中
         if (cache == null) {
             caches.put(key, createCache(url));
             cache = caches.get(key);
         }
+        //如果查到cache，直接返回
         return cache;
     }
 
@@ -66,6 +73,8 @@ public abstract class AbstractCacheFactory implements CacheFactory {
      * @param url url of the method
      * @return Create and return new instance of cache store used as storage for caching return values.
      */
+    //有四个子类（策略）实现了 createCache
+    //新创建的cache只有cache的名目，实际上没有存储什么信息，只做了初始化
     protected abstract Cache createCache(URL url);
 
 }

@@ -25,6 +25,7 @@ import org.apache.dubbo.common.extension.SPI;
  * Instance of Validation interface provide instance of {@link Validator} based on the value of <b>validation</b> attribute.
  */
 @SPI("jvalidation")
+//Validation接口 负责生产Validator
 public interface Validation {
 
     /**

@@ -96,11 +96,15 @@ public class ServiceBean<T> extends ServiceConfig<T> implements InitializingBean
     }
 
     @Override
+    //服务导出的入口方法
+    //onApplicationEvent 是一个事件响应方法，该方法会在收到 Spring 上下文刷新事件后执行服务导出操作。
     public void onApplicationEvent(ContextRefreshedEvent event) {
+        // 是否已导出 && 是不是已被取消导出
         if (!isExported() && !isUnexported()) {
             if (logger.isInfoEnabled()) {
                 logger.info("The service ready on spring started. service: " + getInterface());
             }
+            // 导出服务
             export();
         }
     }

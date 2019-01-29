@@ -25,6 +25,6 @@
     <dubbo:application name="dubbo-annotation-consumer"/>
 
     <!-- registry center config -->
-    <dubbo:registry address="N/A"/>
+    <dubbo:registry address="multicast://127.0.0.1:1234"/>
 
 </beans>

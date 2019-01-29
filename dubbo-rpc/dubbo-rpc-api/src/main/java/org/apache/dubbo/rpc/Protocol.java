@@ -23,7 +23,9 @@ import org.apache.dubbo.common.extension.SPI;
 /**
  * Protocol. (API/SPI, Singleton, ThreadSafe)
  */
+//默认实现了dubbo协议，可见ExtensionLoader,getExtension 关于SPI注解的处理
 @SPI("dubbo")
+//Protocol统一管理了啥？？？
 public interface Protocol {
 
     /**

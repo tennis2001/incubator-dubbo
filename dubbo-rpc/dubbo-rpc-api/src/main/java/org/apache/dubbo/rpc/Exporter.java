@@ -23,6 +23,7 @@ package org.apache.dubbo.rpc;
  * @see org.apache.dubbo.rpc.ExporterListener
  * @see org.apache.dubbo.rpc.protocol.AbstractExporter
  */
+//Exporter干啥的？？？
 public interface Exporter<T> {
 
     /**

@@ -33,17 +33,25 @@ public class JdkProxyFactory extends AbstractProxyFactory {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T getProxy(Invoker<T> invoker, Class<?>[] interfaces) {
+        //currentThread 获取 ContextClassLoader
+        // 创建新的InvokerInvocationHandler对象
+        // java.lang.reflect.Proxy 创建新的 newProxyInstance
         return (T) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), interfaces, new InvokerInvocationHandler(invoker));
     }
 
     @Override
     public <T> Invoker<T> getInvoker(T proxy, Class<T> type, URL url) {
+        //内部类
+        //创建 AbstractProxyInvoker对象
+        //AbstractProxyInvoker类实现了Invoker接口
         return new AbstractProxyInvoker<T>(proxy, type, url) {
             @Override
             protected Object doInvoke(T proxy, String methodName,
                                       Class<?>[] parameterTypes,
                                       Object[] arguments) throws Throwable {
+                //得到proxy对象的Class类型信息，再得到 method
                 Method method = proxy.getClass().getMethod(methodName, parameterTypes);
+                //proxy对象执行method.invoke，arguments为参数
                 return method.invoke(proxy, arguments);
             }
         };
